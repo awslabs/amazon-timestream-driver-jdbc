@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Copyright <2020> Amazon.com, Inc. or its affiliates. All Rights Reserved.
+     Licensed under the Apache License, Version 2.0 (the "License").
+     You may not use this file except in compliance with the License.
+     A copy of the License is located at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     or in the "license" file accompanying this file. This file is distributed
+     on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+     express or implied. See the License for the specific language governing
+     permissions and limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <version>1.0.0</version>
+
+  <parent>
+    <groupId>software.amazon.timestream</groupId>
+    <artifactId>timestream</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
+  <artifactId>integrationtest</artifactId>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.timestream</groupId>
+      <artifactId>amazon-timestream-jdbc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-timestreamquery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-timestreamwrite</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jul-to-slf4j</artifactId>
+    </dependency>
+  </dependencies>
+</project>

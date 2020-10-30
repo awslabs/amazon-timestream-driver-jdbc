@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     Copyright <2020> Amazon.com, Inc. or its affiliates. All Rights Reserved.
+     Licensed under the Apache License, Version 2.0 (the "License").
+     You may not use this file except in compliance with the License.
+     A copy of the License is located at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     or in the "license" file accompanying this file. This file is distributed
+     on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+     express or implied. See the License for the specific language governing
+     permissions and limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>software.amazon.timestream</groupId>
+  <artifactId>timestream</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>jdbc</module>
+    <module>performancetest</module>
+    <module>integrationtest</module>
+  </modules>
+
+  <properties>
+    <!-- Optionally specify a compiler here, we chose Java 8 -->
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <awssdk.version>1.11.870</awssdk.version>
+    <guava.version>28.0-jre</guava.version>
+    <junit.jupiter.version>5.6.2</junit.jupiter.version>
+    <jsoup.version>1.13.1</jsoup.version>
+    <maven.install.version>3.0.0-M1</maven.install.version>
+    <mockito.version>2.28.2</mockito.version>
+    <slf4j.version>1.7.24</slf4j.version>
+    <timestream.version>1.11.872</timestream.version>
+    <timestream.jdbc.version>1.0.0</timestream.jdbc.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-core</artifactId>
+        <version>${awssdk.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.timestream</groupId>
+        <artifactId>amazon-timestream-jdbc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-sts</artifactId>
+        <version>${awssdk.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-timestreamquery</artifactId>
+        <version>${timestream.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-timestreamwrite</artifactId>
+        <version>${timestream.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jul-to-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jsoup</groupId>
+        <artifactId>jsoup</artifactId>
+        <version>${jsoup.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>${junit.jupiter.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>software.amazon.timestream</groupId>
+        <artifactId>amazon-timestream-jdbc</artifactId>
+        <version>${timestream.jdbc.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.1.1</version>
+        <dependencies>
+          <dependency>
+            <groupId>com.puppycrawl.tools</groupId>
+            <artifactId>checkstyle</artifactId>
+            <version>8.31</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <!-- Location of custom checkstyle - will default if not there -->
+          <configLocation>checkstyle/checkstyle-rules.xml</configLocation>
+          <suppressionsLocation>checkstyle/suppressions.xml</suppressionsLocation>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+          <includeTestSourceDirectory>true</includeTestSourceDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>validate</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
