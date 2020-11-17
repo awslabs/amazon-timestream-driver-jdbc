@@ -6,6 +6,7 @@ name: Publish task
 on:
   release:
     types: [published]
+  branches: [main]
 
 jobs:
   build:
@@ -23,5 +24,4 @@ jobs:
     - name: Upload JARs to release
       uses: AButler/upload-release-assets@v2.0
       with:
-        name: jar-files
-        path: jdbc/target/*.jar
+        files: jdbc/target/*.jar
