@@ -6,7 +6,8 @@ name: Publish task
 on:
   release:
     types: [published]
-  branches: [main]
+    branches:
+    - main
 
 jobs:
   build:
