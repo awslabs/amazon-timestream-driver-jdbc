@@ -20,6 +20,32 @@
     <version>1.0.1</version>
     <packaging>jar</packaging>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Timestream JDBC driver</description>
+    <url>https://github.com/awslabs/amazon-timestream-driver-jdbc</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>amazonwebservices</id>
+            <organization>Amazon Web Services</organization>
+            <email>timestream-query@amazon.com</email>
+            <organizationUrl>https://aws.amazon.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/awslabs/amazon-timestream-driver-jdbc.git</connection>
+        <developerConnection>scm:git:git@github.com:awslabs/amazon-timestream-driver-jdbc.git</developerConnection>
+        <url>https://github.com/awslabs/amazon-timestream-driver-jdbc</url>
+    </scm>
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
