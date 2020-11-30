@@ -15,13 +15,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>software.amazon.timestream</groupId>
-        <artifactId>timestream</artifactId>
-        <version>1.0.0</version>
-    </parent>
-
+    <groupId>software.amazon.timestream</groupId>
     <artifactId>amazon-timestream-jdbc</artifactId>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <distributionManagement>
@@ -36,6 +32,11 @@
     </distributionManagement>
 
     <properties>
+        <!-- Optionally specify a compiler here, we chose Java 8 -->
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <!-- Version properties are written out to be picked up by the driver. -->
         <driver.major.version>0</driver.major.version>
         <driver.minor.version>1</driver.minor.version>
@@ -44,36 +45,52 @@
 
         <!-- Set the timezone information for unit tests. -->
         <argLine>-Duser.timezone=Europe/Paris</argLine>
+
+        <!-- Dependency versions -->
+        <awssdk.version>1.11.870</awssdk.version>
+        <guava.version>28.0-jre</guava.version>
+        <junit.jupiter.version>5.6.2</junit.jupiter.version>
+        <jsoup.version>1.13.1</jsoup.version>
+        <mockito.version>2.28.2</mockito.version>
+        <slf4j.version>1.7.24</slf4j.version>
+        <timestream.version>1.11.872</timestream.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-core</artifactId>
+            <version>${awssdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-sts</artifactId>
+            <version>${awssdk.version}</version>
         </dependency>
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-timestreamquery</artifactId>
+            <version>${timestream.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
