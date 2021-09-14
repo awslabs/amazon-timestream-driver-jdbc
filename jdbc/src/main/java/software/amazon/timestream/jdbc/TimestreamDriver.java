@@ -51,7 +51,7 @@ public class TimestreamDriver implements java.sql.Driver {
 
         // Enable all logs in the JUL Logger since we want to control things via SLF4J. JUL Logger will filter out
         // messages before it gets to SLF4J if it set to a restrictive level.
-        LOGGER.setLevel(Level.FINEST);
+        LOGGER.setLevel(Level.FINE);
 
         APPLICATION_NAME = getApplicationName();
         APP_NAME_SUFFIX = " [" + APPLICATION_NAME + "]";
@@ -90,7 +90,7 @@ public class TimestreamDriver implements java.sql.Driver {
 
         url = url.trim();
         if (!url.startsWith(Constants.URL_PREFIX)) {
-            LOGGER.warning(Warning.lookup(Warning.UNSUPPORTED_URL_PREFIX, url));
+            LOGGER.finer(Warning.lookup(Warning.UNSUPPORTED_URL_PREFIX, url));
             return false;
         }
 
@@ -103,7 +103,7 @@ public class TimestreamDriver implements java.sql.Driver {
     @Override
     public TimestreamConnection connect(String url, Properties info) throws SQLException {
         if (!acceptsURL(url)) {
-            LOGGER.warning("Unsupported URL: " + url);
+            LOGGER.finer("Unsupported URL: " + url);
             return null;
         }
 
