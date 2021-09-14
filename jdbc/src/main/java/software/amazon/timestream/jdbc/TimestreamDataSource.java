@@ -74,7 +74,7 @@ public class TimestreamDataSource implements javax.sql.DataSource,
 
   @Override
   public Connection getConnection(String accessKey, String secretKey) throws SQLException {
-    LOGGER.fine("Instantiating a TimestreamConnection from TimestreamDataSource.");
+    LOGGER.finer("Instantiating a TimestreamConnection from TimestreamDataSource.");
     return createTimestreamConnection(getProperties(accessKey, secretKey));
   }
 
@@ -94,13 +94,13 @@ public class TimestreamDataSource implements javax.sql.DataSource,
     while (!poolForCredentials.isEmpty() && (timestreamPooledConnection == null)) {
       final TimestreamConnection connection = poolForCredentials.remove(0);
       if (!connection.isClosed()) {
-        LOGGER.info("Returning an open connection from the connection pool.");
+        LOGGER.finer("Returning an open connection from the connection pool.");
         timestreamPooledConnection = createTimestreamPooledConnection(connection);
       }
     }
 
     if (timestreamPooledConnection == null) {
-      LOGGER.info("Could not find a connection in the pool, creating a connection.");
+      LOGGER.finer("Could not find a connection in the pool, creating a connection.");
       timestreamPooledConnection = createTimestreamPooledConnection(
         createTimestreamConnection(getProperties(accessKey, secretKey)));
     }
@@ -680,9 +680,9 @@ public class TimestreamDataSource implements javax.sql.DataSource,
     eventSource.removeConnectionEventListener(this);
     final TimestreamConnection connection = (TimestreamConnection) eventSource.getConnection();
     if (connection.isClosed()) {
-      LOGGER.info("Connection is closed, not recycling connection back into the connection pool.");
+      LOGGER.finer("Connection is closed, not recycling connection back into the connection pool.");
     } else {
-      LOGGER.info("Connection is still open, recycling the connection back into the connection pool.");
+      LOGGER.finer("Connection is still open, recycling the connection back into the connection pool.");
       availablePools.get(connection.getConnectionProperties()).add(connection);
     }
   }

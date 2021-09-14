@@ -49,13 +49,13 @@ public class TimestreamDriver implements java.sql.Driver {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         SLF4JBridgeHandler.install();
 
-        // Enable all logs in the JUL Logger since we want to control things via SLF4J. JUL Logger will filter out
+        // Enable only >= FINE logs in the JUL Logger since we want to control things via SLF4J. JUL Logger will filter out
         // messages before it gets to SLF4J if it set to a restrictive level.
         LOGGER.setLevel(Level.FINE);
 
         APPLICATION_NAME = getApplicationName();
         APP_NAME_SUFFIX = " [" + APPLICATION_NAME + "]";
-        LOGGER.fine("Name of the application using the driver: " + APP_NAME_SUFFIX);
+        LOGGER.finer("Name of the application using the driver: " + APP_NAME_SUFFIX);
 
         // Load the driver version from the associated pom file.
         int majorVersion = 0;
@@ -107,8 +107,8 @@ public class TimestreamDriver implements java.sql.Driver {
             return null;
         }
 
-        LOGGER.info("Timestream JDBC driver version: " + DRIVER_VERSION);
-        LOGGER.fine("Instantiating a TimestreamConnection from TimestreamDriver.");
+        LOGGER.fine("Timestream JDBC driver version: " + DRIVER_VERSION);
+        LOGGER.finer("Instantiating a TimestreamConnection from TimestreamDriver.");
         return createTimestreamConnection(parseUrl(url, info),
             new ClientConfiguration().withUserAgentSuffix(getUserAgentSuffix()));
     }
@@ -134,7 +134,7 @@ public class TimestreamDriver implements java.sql.Driver {
         if (acceptsURL(url)) {
             tempUrl = url;
         } else {
-            LOGGER.info("Unsupported input URL: \""
+            LOGGER.warning("Unsupported input URL: \""
               + url
               + "\", the default URL \""
               + Constants.URL_PREFIX
@@ -207,7 +207,7 @@ public class TimestreamDriver implements java.sql.Driver {
             }
         } catch (Exception err) {
             // Eat the exception and fall through.
-            LOGGER.info(
+            LOGGER.warning(
                 "An exception has occurred and ignored while retrieving the caller application name: "
                     + err.getLocalizedMessage());
         }
@@ -256,7 +256,7 @@ public class TimestreamDriver implements java.sql.Driver {
                 if (TimestreamConnectionProperty.isSupportedProperty(keyString)) {
                   allProperties.put(keyString, value);
                 } else {
-                  LOGGER.fine("Ignored unsupported property: " + keyString);
+                  LOGGER.warning("Ignored unsupported property: " + keyString);
                 }
             });
         }
@@ -271,7 +271,7 @@ public class TimestreamDriver implements java.sql.Driver {
                 if (TimestreamConnectionProperty.isSupportedProperty(trimmedKeyStr)) {
                     allProperties.put(trimmedKeyStr, keyValue[1]);
                 } else {
-                    LOGGER.fine("Ignored unsupported property: " + trimmedKeyStr);
+                    LOGGER.warning("Ignored unsupported property: " + trimmedKeyStr);
                 }
             }
         }
