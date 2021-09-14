@@ -19,6 +19,28 @@
     <artifactId>amazon-timestream-jdbc</artifactId>
     <version>1.0.2</version>
     <packaging>jar</packaging>
+    <name>amazon-timestream-jdbc</name>
+    <description>AWS Timestream JDBC driver</description>
+    <url>https://github.com/awslabs/amazon-timestream-driver-jdbc</url>
+
+    <licenses>
+        <license>
+            <name>Apache License Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git://github.com:awslabs/amazon-timestream-driver-jdbc.git</connection>
+        <url>https://github.com/awslabs/amazon-timestream-driver-jdbc/tree/main</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Rajesh Iyer</name>
+            <email>rajeiyer@amazon.com</email>
+        </developer>
+    </developers>
 
     <distributionManagement>
         <snapshotRepository>
