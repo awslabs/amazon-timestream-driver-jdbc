@@ -45,7 +45,7 @@ public class TimestreamDataSource implements javax.sql.DataSource,
   static {
     SLF4JBridgeHandler.removeHandlersForRootLogger();
     SLF4JBridgeHandler.install();
-    LOGGER.setLevel(Level.FINEST);
+    LOGGER.setLevel(Level.FINE);
   }
 
   @VisibleForTesting
