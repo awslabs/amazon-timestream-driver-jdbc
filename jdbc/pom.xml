@@ -72,7 +72,7 @@
         <awssdk.version>1.11.870</awssdk.version>
         <guava.version>29.0-jre</guava.version>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
-        <jsoup.version>1.14.2</jsoup.version>
+        <jsoup.version>1.15.3</jsoup.version>
         <mockito.version>2.28.2</mockito.version>
         <slf4j.version>1.7.24</slf4j.version>
         <timestream.version>1.11.872</timestream.version>
