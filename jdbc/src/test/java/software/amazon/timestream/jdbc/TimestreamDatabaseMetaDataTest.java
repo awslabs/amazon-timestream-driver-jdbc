@@ -52,6 +52,59 @@ class TimestreamDatabaseMetaDataTest {
     dbMetaData = new TimestreamDatabaseMetaData(mockConnection);
   }
 
+  /**
+   * Checks that an empty result set is returned for getCatalogs
+   */
+  @Test
+  void testGetCatalogsWithResult() throws SQLException {
+    initializeWithResult();
+    try (ResultSet resultSet = dbMetaData
+            .getCatalogs()) {
+      Assertions.assertFalse(resultSet.next());
+    }
+  }
+
+  /**
+   * Checks that a result set containing database name "testDB" is returned for getSchemas with no parameters
+   */
+  @Test
+  void testGetSchemasWithResult() throws SQLException {
+    initializeWithResult();
+
+    try (ResultSet resultSet = dbMetaData
+            .getSchemas()) {
+      testGetSchemasResult(resultSet);
+    }
+  }
+
+  /**
+   * Checks that a result set containing database name "testDB" is returned for getSchemas with null parameters
+   */
+  @Test
+  void testGetSchemasNullParamWithResult() throws SQLException {
+    initializeWithResult();
+
+    try (ResultSet resultSet = dbMetaData
+            .getSchemas(null, null)) {
+      testGetSchemasResult(resultSet);
+    }
+  }
+
+  /**
+   * Checks that a result set containing database name "testDB" is returned for getSchemas with schemaPattern
+   * @param schemaPattern Schema pattern to be tested
+   * Input values tested for schemaPattern: {"%", "testDB", "%testDB%"}
+   */
+  @ParameterizedTest
+  @ValueSource(strings = {"%", "testDB", "%testDB%"})
+  void testGetSchemasWithSchemaPattern(String schemaPattern) throws SQLException {
+    initializeWithResult();
+    try (ResultSet resultSet = dbMetaData
+            .getSchemas(null, schemaPattern)) {
+      testGetSchemasResult(resultSet);
+    }
+  }
+
   @Test
   void testGetColumnsWithResult() throws SQLException {
     initializeWithResult();
@@ -255,6 +308,10 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(dbResultSet.next()).thenReturn(true).thenReturn(false);
     Mockito.when(dbResultSet.getString(1)).thenReturn("testDB");
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenReturn(dbResultSet);
 
     final ResultSet tableResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(tableResultSet.next()).thenReturn(true).thenReturn(false);
@@ -293,16 +350,37 @@ class TimestreamDatabaseMetaDataTest {
   }
 
   /**
+   * Validate resultSet MetaData returned from getSchemas.
+   *
+   * @param resultSet ResultSet need to be validated.
+   * @throws SQLException If an error occurs while retrieving the value.
+   */
+  private void testGetSchemasResult(ResultSet resultSet) throws SQLException {
+    final String[] string1 = {"", "testDB", null};
+    final List<String[]> strings = new ArrayList<>();
+    strings.add(string1);
+
+    int numRows = 0;
+    while (resultSet.next()) {
+      for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); ++i) {
+        Assertions.assertEquals(strings.get(numRows)[i], resultSet.getString(i));
+      }
+      numRows++;
+    }
+    Assertions.assertEquals(1, numRows);
+  }
+
+  /**
    * Validate resultSet MetaData returned from getColumns.
    *
    * @param resultSet ResultSet need to be validated.
    * @throws SQLException If an error occurs while retrieving the value.
    */
   private void testGetColumnsResult(ResultSet resultSet) throws SQLException {
-    final String[] string1 = {"", "testDB", null, "testTable", "ColName", "12", "UNKNOWN",
+    final String[] string1 = {"", null, "testDB", "testTable", "ColName", "12", "UNKNOWN",
       "2147483647", null, null, null, "1", null, null, "12", null, "2147483647", "1",
       "YES", null, null, null, null, "NO", "NO"};
-    final String[] string2 = {"", "testDB", null, "testTable", "ColName", "12", "UNKNOWN",
+    final String[] string2 = {"", null, "testDB", "testTable", "ColName", "12", "UNKNOWN",
       "2147483647", null, null, null, "1", null, null, "12", null, "2147483647", "2",
       "YES", null, null, null, null, "NO", "NO"};
     final List<String[]> strings = new ArrayList<>();
@@ -326,7 +404,7 @@ class TimestreamDatabaseMetaDataTest {
    * @throws SQLException If an error occurs while retrieving the value.
    */
   private void testGetTableResult(ResultSet resultSet) throws SQLException {
-    final String[] strings = {"", "testDB", null, "testTable", "TABLE", null, null, null, null,
+    final String[] strings = {"", null, "testDB", "testTable", "TABLE", null, null, null, null,
       null, null};
 
     int numRows = 0;

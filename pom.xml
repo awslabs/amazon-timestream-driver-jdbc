@@ -17,7 +17,7 @@
 
   <groupId>software.amazon.timestream</groupId>
   <artifactId>timestream</artifactId>
-  <version>1.0.2</version>
+  <version>2.0.0</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -40,7 +40,7 @@
     <mockito.version>2.28.2</mockito.version>
     <slf4j.version>1.7.24</slf4j.version>
     <timestream.version>1.11.872</timestream.version>
-    <timestream.jdbc.version>1.0.0</timestream.jdbc.version>
+    <timestream.jdbc.version>2.0.0</timestream.jdbc.version>
   </properties>
 
   <dependencyManagement>

@@ -134,7 +134,7 @@ public class TimestreamColumnsResultSet extends TimestreamBaseResultSet {
     }
 
     // Get the columns for the next table.
-    curDatabase = tablesResult.getString(1);
+    curDatabase = tablesResult.getString(2);
     curTable = tablesResult.getString(3);
     result = statement.executeQuery(String.format("DESCRIBE \"%s\".\"%s\"", curDatabase, curTable));
 
@@ -168,8 +168,8 @@ public class TimestreamColumnsResultSet extends TimestreamBaseResultSet {
     for (int i = 1; i <= numColumns; ++i) {
       final int columnType = rsMeta.getColumnType(i);
       columns.add(new Row().withData(
-        createDatum(curDatabase),
         NULL_DATUM,
+        createDatum(curDatabase),
         createDatum(curTable),
         createDatum(rsMeta.getColumnName(i)),
         createDatum(columnType),

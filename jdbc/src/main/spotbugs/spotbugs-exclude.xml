@@ -18,4 +18,12 @@
     <Class name="software.amazon.timestream.jdbc.TimestreamTablesResultSet"/>
     <Method name="populateCurrentRows"/>
   </Match>
+  <Match>
+    <!--The exclude is added as currently driver does not support the prepared statement.
+    This is not a new exclude, as it has already been added for populateCurrentRows for
+    TimestreamTablesResultSet in this file.-->
+    <Bug pattern="SQL_NONCONSTANT_STRING_PASSED_TO_EXECUTE"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamSchemasResultSet"/>
+    <Method name="populateCurrentRows" params="software.amazon.timestream.jdbc.TimestreamConnection,java.lang.String" returns="void" />
+  </Match>
 </FindBugsFilter>

@@ -17,7 +17,7 @@
 
     <groupId>software.amazon.timestream</groupId>
     <artifactId>amazon-timestream-jdbc</artifactId>
-    <version>1.0.2</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
     <name>amazon-timestream-jdbc</name>
     <description>AWS Timestream JDBC driver</description>
@@ -60,8 +60,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Version properties are written out to be picked up by the driver. -->
-        <driver.major.version>0</driver.major.version>
-        <driver.minor.version>1</driver.minor.version>
+        <driver.major.version>2</driver.major.version>
+        <driver.minor.version>0</driver.minor.version>
         <driver.hotfix.version>0</driver.hotfix.version>
         <driver.version>${project.version}</driver.version>
 
