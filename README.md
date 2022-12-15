@@ -15,6 +15,17 @@ The Timestream JDBC driver is distributed as two JAR files.
 ### JAR With All Dependencies Shaded Except SLF4J (amazon-timestream-jdbc-\<version\>-jar-with-all-dependencies.jar)
 This is the shaded JAR which bundles up all the required dependencies and can be used directly in Java projects and external applications, without explicitly adding external dependencies. This JAR does not relocate the classpath of SLF4J, allowing logging to be enabled in external applications.
 
+###  Driver Setup in BI Applications
+The JDBC driver is compatible with a number of BI tools. Instructions are outlined here for:
+
+- [Aqua Data Studio](markdown/setup/aqua-data-studio-setup.md)
+- [DBeaver](markdown/setup/dbeaver-driver-setup.md)
+- [DbVisualizer](markdown/setup/dbvisualizer-driver-setup.md)
+- [SQuirreL](markdown/setup/squirrel-driver-setup.md)
+- [Tableau Desktop](markdown/setup/tableau-desktop-driver-setup.md)
+
+For other BI tools, please refer to that tool's product documentation
+
 ### JAR With No Dependencies (amazon-timestream-jdbc-\<version\>.jar)
 This is the lightweight JAR which does not include any dependencies. This JAR could be used if the application developer does not want duplicate dependencies and want full control over their dependency tree.
 
@@ -31,7 +42,7 @@ To create a connection, construct a connection URL by appending optional connect
 The default URL for Timestream is `jdbc:timestream`.
 
 ### Constructing the Connection URL
-Timestream supports optional connection properties that could be specified through the JDBC URL. To specify these optional properties use the following URL format: `jdbc:timestream://PropertyName1=value1;PropertyName2=value2...`.
+Timestream supports optional connection properties that could be specified through the JDBC URL. To specify these optional properties use the following URL format: `jdbc:timestream://PropertyName1=value1;PropertyName2=value2...`. Note the property name is **case sensitive**.
 
 An example of the JDBC URL with properties: `jdbc:timestream://AccessKeyId=myAccessKeyId;SecretAccessKey=mySecretAccessKey;SessionToken=mySessionToken;Region=myRegion`
 
