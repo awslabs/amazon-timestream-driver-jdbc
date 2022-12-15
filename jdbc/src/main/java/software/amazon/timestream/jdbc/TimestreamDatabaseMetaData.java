@@ -937,7 +937,7 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
 
   @Override
   public boolean supportsSchemasInDataManipulation() {
-    return false;
+    return true;
   }
 
   @Override
