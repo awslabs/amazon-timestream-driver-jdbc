@@ -935,6 +935,10 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
     return false;
   }
 
+  /**
+   * Retrieves whether a schema name can be used in a data manipulation statement.
+   * @return true since functionality is supported
+   */
   @Override
   public boolean supportsSchemasInDataManipulation() {
     return true;
