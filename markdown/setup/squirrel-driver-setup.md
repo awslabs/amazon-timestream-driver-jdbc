@@ -32,7 +32,7 @@
     ![Example](../images/squirrel/squirrel4.png)
 
 3. Navigate the menu path **Aliases > New Alias...**
-4. In the popped up window, fill the following info
+4. In the popup window, fill the following info
 
     a. For the **Name:** field, enter a name for this alias. For example, `TimestreamConnection`
     

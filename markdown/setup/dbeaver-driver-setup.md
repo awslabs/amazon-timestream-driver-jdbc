@@ -11,20 +11,11 @@
     a. In **Settings** tab, for **Driver Name** field, enter a descriptive name (e.g. `Timestream`)
 
     b. In **Settings** tab, for **URL Template** field, enter your JDBC connection string. For example:
-      
-    ```
-        -- replace the values in "<>" with your own value
-        jdbc:timestream://Region=<region>;
-    ```
-
-    If your database requires an username and password, it can be entered in the connection string when setting up the driver
 
     ```
         -- replace the values in "<>" with your own value
         jdbc:timestream://AccessKeyId=<myAccessKeyId>;SecretAccessKey=<mySecretAccessKey>;SessionToken=<mySessionToken>;Region=<myRegion>
     ```
-
-    or username and password can be entered later when connecting to Amazon Timestream using DBeaver.
 
     ![Example](../images/dbeaver/dbeaver1.png)
 
@@ -43,10 +34,10 @@
 
     ![Example](../images/dbeaver/dbeaver3.png)
 
-3. In the **Main** tab, in the **Authentication** section, enter the username and password if your database requires it AND if it was not entered in URL Template when setting up your driver. Otherwise you can leave it empty. The **JDBC URL** for your driver is shown in this prompt.
+3. After you see the popup window as below, click **Test Connection ...** to confirm your connection to Timestream.
 
     ![Example](../images/dbeaver/dbeaver4.png)
 
-4. Click **Test Connection ...** to confirm your connection and then click **Finish**. After you succeed to connect to Timestream, click the driver name on the left window. Then you will be able to see the all the database listed as the example.
+4. Click **Finish**. After you succeed to connect to Timestream, click the driver name on the left window. Then you will be able to see the all the database listed as the example.
 
     ![Example](../images/dbeaver/dbeaver5.png)

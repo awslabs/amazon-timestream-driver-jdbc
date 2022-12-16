@@ -31,13 +31,9 @@
 
     c. For the **Driver Type** field, ensure the **Timesteam** is selected.
 
-    d. For the **Database URL** field, enter your [JDBC connection string](../../README.md#optional-connection-properties). For example, ```jdbc:timestream://Region=us-east-1;```
+    d. For the **Database URL** field, enter your [JDBC connection string](../../README.md#optional-connection-properties). For example, ```jdbc:timestream://AccessKeyId=abcdef;SecretAccessKey=123456;Region=us-east-1;```
 
-    e. For the **Database Userid** field, enter your Amazon Timestream user ID.
-
-    f. For the **Database Password** field, enter the corresponding password for the user ID.
-
-    g. Your **Database Connection** dialog should look like the following.
+    e. Your **Database Connection** dialog should look like the following.
 
     ![Example](../images/dbvisualizer/DbVisualizer3.png)
 
