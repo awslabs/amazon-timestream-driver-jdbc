@@ -9,7 +9,7 @@
 
     ![Example](../images/dbvisualizer/DbVisualizer4.png)
 
-3. In the new popped up window, find **Driver Settings** tab and fill the following info.
+3. In the new popup window, find **Driver Settings** tab and fill the following info.
 
     a. For the **Name:** field, enter **Timestream**
 
