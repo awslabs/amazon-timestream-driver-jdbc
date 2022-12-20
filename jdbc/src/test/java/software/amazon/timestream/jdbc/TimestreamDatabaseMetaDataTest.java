@@ -14,6 +14,7 @@
  */
 package software.amazon.timestream.jdbc;
 
+import com.amazonaws.services.timestreamquery.model.AmazonTimestreamQueryException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -111,6 +112,10 @@ class TimestreamDatabaseMetaDataTest {
     }
   }
 
+  /**
+   * Checks that nothing could be returned for invalid schema
+   * @param schemaPattern Schema pattern to be tested
+   */
   @ParameterizedTest
   @ValueSource(strings = {"testDB1"})
   void testGetSchemasWithInvalidSchemaPattern(String schemaPattern) throws SQLException {
@@ -118,6 +123,23 @@ class TimestreamDatabaseMetaDataTest {
     try (ResultSet resultSet = dbMetaData
             .getSchemas(null, schemaPattern)) {
       testGetSchemasResult(resultSet, 0);
+    }
+  }
+
+  /**
+   * Checks that exception "access denied" could be thrown
+   */
+  @Test
+  void testGetSchemasWithResultException() throws SQLException {
+    initializeWithResultException();
+
+    try {
+      ResultSet resultSet = dbMetaData.getSchemas();
+      Assertions.fail("unexpected success");
+    } catch (AmazonTimestreamQueryException ae) {
+      Assertions.assertEquals(ae.getErrorMessage(), "access denied");
+    } catch(Exception e) {
+      Assertions.fail("unexpected exception " + e.getMessage());
     }
   }
   @Test
@@ -385,6 +407,15 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(columnsResultSet.getString(Mockito.anyInt())).thenReturn("ColName");
     Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"testTable\""))
             .thenReturn(columnsResultSet);
+  }
+
+  private void initializeWithResultException() throws SQLException {
+    final AmazonTimestreamQueryException exception = new AmazonTimestreamQueryException("access denied");
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES")).thenThrow(exception);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%'")).thenThrow(exception);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenThrow(exception);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenThrow(exception);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenThrow(exception);
   }
 
   /**
