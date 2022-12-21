@@ -67,17 +67,53 @@ class DatabaseMetaDataIntegrationTest {
     connection.close();
   }
 
+  /**
+   * Test getCatalogs returns empty ResultSet.
+   * @throws SQLException the exception thrown
+   */
   @Test
-  @DisplayName("Test retrieving all databases.")
+  @DisplayName("Test getCatalogs(). Empty result set should be returned")
   void testCatalogs() throws SQLException {
-    final List<String> databasesList = Arrays.asList(Constants.DATABASES_NAMES);
     final List<String> catalogsList = new ArrayList<>();
     try (ResultSet catalogs = metaData.getCatalogs()) {
       while (catalogs.next()) {
         catalogsList.add(catalogs.getString("TABLE_CAT"));
       }
     }
-    Assertions.assertTrue(catalogsList.containsAll(databasesList));
+    Assertions.assertTrue(catalogsList.isEmpty());
+  }
+
+  /**
+   * Test getSchemas returns the list of all databases.
+   * @throws SQLException the exception thrown
+   */
+  @Test
+  @DisplayName("Test retrieving all databases.")
+  void testSchemas() throws SQLException {
+    final List<String> databasesList = Arrays.asList(Constants.DATABASES_NAMES);
+    final List<String> schemasList = new ArrayList<>();
+    try (ResultSet schemas = metaData.getSchemas()) {
+      while (schemas.next()) {
+        schemasList.add(schemas.getString("TABLE_SCHEM"));
+      }
+    }
+    Assertions.assertTrue(schemasList.containsAll(databasesList));
+  }
+
+  /**
+   * Test getSchemas returns database "JDBC_Integration07_Test_DB" when given matching patterns.
+   * @param schemaPattern the schema pattern to be tested
+   * @throws SQLException the exception thrown
+   */
+  @ParameterizedTest
+  @ValueSource(strings = {"JDBC_%", "%_Integration%", "%Test_DB", "JDBC_Integration___Test_DB", "JDBC!_Integration07!_Test!_DB' escape '!"})
+  @DisplayName("Test retrieving database name JDBC_Integration07_Test_DB with pattern.")
+  void testGetSchemasWithSchemaPattern(String schemaPattern) throws SQLException {
+    try (ResultSet schemas = metaData.getSchemas(null, schemaPattern)) {
+      while (schemas.next()) {
+        Assertions.assertEquals(Constants.DATABASE_NAME, schemas.getString("TABLE_SCHEM"));
+      }
+    }
   }
 
   @ParameterizedTest

@@ -58,12 +58,12 @@ public class TimestreamTablesResultSet extends TimestreamBaseResultSet {
    * Constructor.
    *
    * @param connection       the parent connection of the result set.
-   * @param database         the database to search within.
+   * @param schemaPattern    the schema pattern to use to match database names.
    * @param tableNamePattern the regex pattern to use to match table names.
    * @param types            the types that should be returned.
    * @throws SQLException if a database access error occurs.
    */
-  TimestreamTablesResultSet(TimestreamConnection connection, String database,
+  TimestreamTablesResultSet(TimestreamConnection connection, String schemaPattern,
     String tableNamePattern,
     String[] types) throws SQLException {
     super(null, 20);
@@ -72,7 +72,7 @@ public class TimestreamTablesResultSet extends TimestreamBaseResultSet {
     this.namePattern = tableNamePattern;
 
     if ((null == types) || ((1 == types.length) && (Constants.TABLE_TYPE.equals(types[0])))) {
-      this.databaseItr = getDatabases(database);
+      this.databaseItr = getDatabases(schemaPattern);
       doNextPage();
     } else {
       // There's currently only a single type of table, if the specified type doesn't match there are now rows,
@@ -127,18 +127,12 @@ public class TimestreamTablesResultSet extends TimestreamBaseResultSet {
   /**
    * Retrieve the databases in the Timestream instance to retrieve tables for.
    *
-   * @param database the specified database to use, may be null.
+   * @param schemaPattern the schema pattern to use to match database names, maybe null.
    * @return the databases in the Timestream instance to list tables for.
    * @throws SQLException if there is an error reading from Timestream.
    */
-  private Iterator<String> getDatabases(String database) throws SQLException {
-    if (null != database) {
-      LOGGER.debug("Specific database: \"{}\" provided for table retrieval.", database);
-      // A database was specified, so use that.
-      return ImmutableList.of(database).iterator();
-    }
-
-    try (ResultSet rs = new TimestreamDatabasesResultSet(connection)) {
+  private Iterator<String> getDatabases(String schemaPattern) throws SQLException {
+    try (ResultSet rs = new TimestreamSchemasResultSet(connection, schemaPattern)) {
       final List<String> databases = new ArrayList<>();
       while (rs.next()) {
         databases.add(rs.getString(1));
@@ -164,8 +158,8 @@ public class TimestreamTablesResultSet extends TimestreamBaseResultSet {
       try (ResultSet rs = statement.executeQuery(query)) {
         while (rs.next()) {
           tables.add(new Row().withData(
-            new Datum().withScalarValue(database),
             NULL_DATUM,
+            new Datum().withScalarValue(database),
             new Datum().withScalarValue(rs.getString(1)),
             new Datum().withScalarValue(Constants.TABLE_TYPE),
             NULL_DATUM,

@@ -171,8 +171,9 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getCatalogs() throws SQLException {
-    return new TimestreamDatabasesResultSet(this.connection);
+  public ResultSet getCatalogs(){
+    LOGGER.debug("Catalogs are not supported. Returning an empty result set.");
+    return new TimestreamDatabasesResultSet();
   }
 
   @Override
@@ -187,11 +188,11 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getColumns(String catalog, String schemaNamePattern, String tableNamePattern,
+  public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern,
     String columnNamePattern) throws SQLException {
     return new TimestreamColumnsResultSet(
       connection,
-      catalog,
+      schemaPattern,
       tableNamePattern,
       convertPattern(columnNamePattern));
   }
@@ -467,15 +468,13 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getSchemas() {
-    LOGGER.debug("Schemas are not supported. Returning an empty result set.");
-    return new TimestreamSchemasResultSet();
+  public ResultSet getSchemas() throws SQLException {
+    return new TimestreamSchemasResultSet(this.connection, null);
   }
 
   @Override
-  public ResultSet getSchemas(String catalog, String schemaPattern) {
-    LOGGER.debug("Schemas are not supported. Returning an empty result set.");
-    return new TimestreamSchemasResultSet();
+  public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
+    return new TimestreamSchemasResultSet(this.connection, schemaPattern);
   }
 
   @Override
@@ -522,7 +521,7 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
     String schemaPattern,
     String tableNamePattern,
     String[] types) throws SQLException {
-    return new TimestreamTablesResultSet(connection, catalog, tableNamePattern, types);
+    return new TimestreamTablesResultSet(connection, schemaPattern, tableNamePattern, types);
   }
 
   @Override
@@ -936,9 +935,13 @@ public class TimestreamDatabaseMetaData implements java.sql.DatabaseMetaData {
     return false;
   }
 
+  /**
+   * Retrieves whether a schema name can be used in a data manipulation statement.
+   * @return true since functionality is supported
+   */
   @Override
   public boolean supportsSchemasInDataManipulation() {
-    return false;
+    return true;
   }
 
   @Override
