@@ -445,14 +445,13 @@ Javadoc JAR builds with `mvn install` alongside the other JAR files. To extract 
 
 ### Known Issues
 1. Timestream does not support fully qualified table names.
-1. Timestream does not support the queries that contain ":" in the column aliases. Tools like Tableau may not work as expected.
+2. Timestream does not support the queries that contain ":" in the column aliases. Tools like Tableau may not work as expected.
 
 ### Caveats
 1. Timestream JDBC driver supports `getSchemas` and does not support `getCatalogs`, so Tableau will show database as schemas instead of catalogs. 
 2. SQuirreL SQL Client does not support Rows and Arrays. Running a `SELECT` query that returns an Array or a Struct will result in `UnknownType<2,003>`/`UnknownType<2,002>`.
 3. SQLWorkbench/J does not support using `Database Explorer` to describe Timestream databases with an `underscore` in the name, e.g. `grafana_db`.
 4. SQLWorkbench/J does not display the array values within a `java.sql.Struct`, instead SQLWorkbench/J displays the array's base type, e.g.`com.tsshaded.amazonaws.services.timestreamquery.model.Row(DOUBLE, 2)` instead of `({1.3},2)`.
-5. Timestream JDBC driver only works with queries with fully qualified table names.
 
 ## License
 This library is licensed under the Apache 2.0 License.

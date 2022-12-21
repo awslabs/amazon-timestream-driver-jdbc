@@ -103,7 +103,8 @@ class TimestreamDatabaseMetaDataTest {
           "%, 2",
           ", 2",
           "testDB, 1",
-          "%testDB%, 1"
+          "%testDB%, 1",
+          "test__, 1"
   })
   void testGetSchemasWithSchemaPattern(String schemaPattern, int expectedValue) throws SQLException {
     initializeWithTwoResults();
@@ -367,6 +368,7 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'test__'")).thenReturn(dbResultSet);
   }
 
   /**
