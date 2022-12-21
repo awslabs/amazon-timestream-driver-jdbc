@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Result set to return an empty list of schemas in Timestream.
+ * Result set to return schemas in Timestream.
  */
 public class TimestreamSchemasResultSet extends TimestreamBaseResultSet {
   private static final Logger LOGGER = LoggerFactory.getLogger(TimestreamDatabasesResultSet.class);
