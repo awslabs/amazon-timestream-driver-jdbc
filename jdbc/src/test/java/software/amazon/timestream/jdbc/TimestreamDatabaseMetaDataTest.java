@@ -118,7 +118,7 @@ class TimestreamDatabaseMetaDataTest {
    * @param schemaPattern Schema pattern to be tested
    */
   @ParameterizedTest
-  @ValueSource(strings = {"testDB1"})
+  @ValueSource(strings = {"invalidDB"})
   void testGetSchemasWithInvalidSchemaPattern(String schemaPattern) throws SQLException {
     initializeWithTwoResults();
     try (ResultSet resultSet = dbMetaData
