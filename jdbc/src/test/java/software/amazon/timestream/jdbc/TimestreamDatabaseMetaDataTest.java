@@ -239,6 +239,18 @@ class TimestreamDatabaseMetaDataTest {
     }
   }
 
+  /**
+   * Checks that empty result set is returned for empty database
+   */
+  @Test
+  void testGetTablesWithEmptyDatabase() throws SQLException {
+    initializeWithResult();
+    try (ResultSet resultSet = dbMetaData
+            .getTables(null, "emptyDB", null, null)) {
+      Assertions.assertFalse(resultSet.next());
+    }
+  }
+
   @ParameterizedTest
   @ValueSource(strings = {"%test%", "_estTabl_", "%Ta_le"})
   void testGetTablesWithTableNamePattern(String pattern) throws SQLException {
@@ -363,6 +375,13 @@ class TimestreamDatabaseMetaDataTest {
    * @throws SQLException If an error occurs while retrieving the value.
    */
   private void initializeWithResult() throws SQLException {
+    final ResultSet emptyResultSet = Mockito.mock(ResultSet.class);
+    Mockito.when(emptyResultSet.next()).thenReturn(false);
+
+    final ResultSet emptydbResultSet = Mockito.mock(ResultSet.class);
+    Mockito.when(emptydbResultSet.next()).thenReturn(true).thenReturn(false);
+    Mockito.when(emptydbResultSet.getString(1)).thenReturn("emptyDB");
+
     final ResultSet dbResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(dbResultSet.next()).thenReturn(true).thenReturn(false);
     Mockito.when(dbResultSet.getString(1)).thenReturn("testDB");
@@ -372,23 +391,33 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'emptyDB'")).thenReturn(emptydbResultSet);
+
+    final ResultSet singleTableResultSet = Mockito.mock(ResultSet.class);
+    Mockito.when(singleTableResultSet.next()).thenReturn(true).thenReturn(false);
+    Mockito.when(singleTableResultSet.getString(1)).thenReturn("testTable");
 
     final ResultSet tableResultSet = Mockito.mock(ResultSet.class);
-    Mockito.when(tableResultSet.next()).thenReturn(true).thenReturn(false);
-    Mockito.when(tableResultSet.getString(1)).thenReturn("testTable");
+    Mockito.when(tableResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+    Mockito.when(tableResultSet.getString(1)).thenReturn("testTable").thenReturn("secondTable");
+
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\""))
             .thenReturn(tableResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '%test%'"))
-            .thenReturn(tableResultSet);
+      .thenReturn(singleTableResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '_estTabl_'"))
-            .thenReturn(tableResultSet);
+      .thenReturn(singleTableResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '%Ta_le'"))
-            .thenReturn(tableResultSet);
+      .thenReturn(singleTableResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"emptyDB\""))
+            .thenReturn(emptyResultSet);
 
     final ResultSet columnsResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(columnsResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
     Mockito.when(columnsResultSet.getString(Mockito.anyInt())).thenReturn("ColName");
     Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"testTable\""))
+      .thenReturn(columnsResultSet);
+    Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"secondTable\""))
             .thenReturn(columnsResultSet);
   }
 
@@ -484,16 +513,21 @@ class TimestreamDatabaseMetaDataTest {
    * @throws SQLException If an error occurs while retrieving the value.
    */
   private void testGetTableResult(ResultSet resultSet) throws SQLException {
-    final String[] strings = {"", null, "testDB", "testTable", "TABLE", null, null, null, null,
-      null, null};
+    final String[] string1 = {"", null, "testDB", "testTable", "TABLE", null, null, null, null,
+            null, null};
+    final String[] string2 = {"", null, "testDB", "secondTable", "TABLE", null, null, null, null,
+            null, null};
+    final List<String[]> strings = new ArrayList<>();
+    strings.add(string1);
+    strings.add(string2);
 
     int numRows = 0;
     while (resultSet.next()) {
-      numRows++;
       for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); ++i) {
-        Assertions.assertEquals(strings[i], resultSet.getString(i));
+        Assertions.assertEquals(strings.get(numRows)[i], resultSet.getString(i));
       }
+      numRows++;
     }
-    Assertions.assertEquals(1, numRows);
+    Assertions.assertEquals(2, numRows);
   }
 }
