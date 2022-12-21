@@ -106,7 +106,7 @@ class DatabaseMetaDataIntegrationTest {
    * @throws SQLException the exception thrown
    */
   @ParameterizedTest
-  @ValueSource(strings = {"JDBC_%", "%_Integration%", "%Test_DB", "JDBC_Integration___Test_DB with pattern"})
+  @ValueSource(strings = {"JDBC_%", "%_Integration%", "%Test_DB", "JDBC_Integration___Test_DB"})
   @DisplayName("Test retrieving database name JDBC_Integration07_Test_DB with pattern.")
   void testGetSchemasWithSchemaPattern(String schemaPattern) throws SQLException {
     try (ResultSet schemas = metaData.getSchemas(null, schemaPattern)) {
