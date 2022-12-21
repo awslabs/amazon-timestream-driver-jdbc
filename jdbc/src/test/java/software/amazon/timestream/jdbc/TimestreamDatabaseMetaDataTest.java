@@ -421,13 +421,14 @@ class TimestreamDatabaseMetaDataTest {
             .thenReturn(columnsResultSet);
   }
 
+  /**
+   * Initialize the catalog metadata results with an exception.
+   *
+   * @throws SQLException If an error occurs while retrieving the value.
+   */
   private void initializeWithResultException() throws SQLException {
     final AmazonTimestreamQueryException exception = new AmazonTimestreamQueryException("access denied");
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES")).thenThrow(exception);
-    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%'")).thenThrow(exception);
-    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenThrow(exception);
-    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenThrow(exception);
-    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenThrow(exception);
   }
 
   /**
