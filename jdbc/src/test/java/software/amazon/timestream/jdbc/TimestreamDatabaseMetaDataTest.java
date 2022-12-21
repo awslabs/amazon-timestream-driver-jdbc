@@ -14,10 +14,12 @@
  */
 package software.amazon.timestream.jdbc;
 
+import com.amazonaws.services.timestreamquery.model.AmazonTimestreamQueryException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
@@ -29,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -65,46 +68,81 @@ class TimestreamDatabaseMetaDataTest {
   }
 
   /**
-   * Checks that a result set containing database name "testDB" is returned for getSchemas with no parameters
+   * Checks that all result sets are returned for getSchemas with no parameters
    */
   @Test
   void testGetSchemasWithResult() throws SQLException {
-    initializeWithResult();
+    initializeWithTwoResults();
 
     try (ResultSet resultSet = dbMetaData
             .getSchemas()) {
-      testGetSchemasResult(resultSet);
+      testGetSchemasResult(resultSet,2);
     }
   }
 
   /**
-   * Checks that a result set containing database name "testDB" is returned for getSchemas with null parameters
+   * Checks that all result sets are returned for getSchemas with null parameters
    */
   @Test
   void testGetSchemasNullParamWithResult() throws SQLException {
-    initializeWithResult();
+    initializeWithTwoResults();
 
     try (ResultSet resultSet = dbMetaData
             .getSchemas(null, null)) {
-      testGetSchemasResult(resultSet);
+      testGetSchemasResult(resultSet, 2);
     }
   }
 
   /**
-   * Checks that a result set containing database name "testDB" is returned for getSchemas with schemaPattern
+   * Checks that all result sets are returned for getSchemas with schemaPattern
    * @param schemaPattern Schema pattern to be tested
-   * Input values tested for schemaPattern: {"%", "testDB", "%testDB%"}
+   * @param expectedValue Expected resultset number
    */
   @ParameterizedTest
-  @ValueSource(strings = {"%", "testDB", "%testDB%"})
-  void testGetSchemasWithSchemaPattern(String schemaPattern) throws SQLException {
-    initializeWithResult();
+  @CsvSource(value = {
+          "%, 2",
+          ", 2",
+          "testDB, 1",
+          "%testDB%, 1"
+  })
+  void testGetSchemasWithSchemaPattern(String schemaPattern, int expectedValue) throws SQLException {
+    initializeWithTwoResults();
     try (ResultSet resultSet = dbMetaData
             .getSchemas(null, schemaPattern)) {
-      testGetSchemasResult(resultSet);
+      testGetSchemasResult(resultSet, expectedValue);
     }
   }
 
+  /**
+   * Checks that nothing could be returned for invalid schema
+   * @param schemaPattern Schema pattern to be tested
+   */
+  @ParameterizedTest
+  @ValueSource(strings = {"invalidDB"})
+  void testGetSchemasWithInvalidSchemaPattern(String schemaPattern) throws SQLException {
+    initializeWithTwoResults();
+    try (ResultSet resultSet = dbMetaData
+            .getSchemas(null, schemaPattern)) {
+      testGetSchemasResult(resultSet, 0);
+    }
+  }
+
+  /**
+   * Checks that exception "access denied" could be thrown
+   */
+  @Test
+  void testGetSchemasWithResultException() throws SQLException {
+    initializeWithResultException();
+
+    try {
+      ResultSet resultSet = dbMetaData.getSchemas();
+      Assertions.fail("unexpected success");
+    } catch (AmazonTimestreamQueryException ae) {
+      Assertions.assertEquals(ae.getErrorMessage(), "access denied");
+    } catch(Exception e) {
+      Assertions.fail("unexpected exception " + e.getMessage());
+    }
+  }
   @Test
   void testGetColumnsWithResult() throws SQLException {
     initializeWithResult();
@@ -315,6 +353,27 @@ class TimestreamDatabaseMetaDataTest {
    *
    * @throws SQLException If an error occurs while retrieving the value.
    */
+  private void initializeWithTwoResults() throws SQLException {
+    final ResultSet dbResultSet = Mockito.mock(ResultSet.class);
+    Mockito.when(dbResultSet.next()).thenReturn(true).thenReturn(false);
+    Mockito.when(dbResultSet.getString(1)).thenReturn("testDB");
+
+    final ResultSet dbResultSet2 = Mockito.mock(ResultSet.class);
+    Mockito.when(dbResultSet2.next()).thenReturn(true).thenReturn(true).thenReturn(false);
+    Mockito.when(dbResultSet2.getString(1)).thenReturn("testDB").thenReturn("exampleDB");
+
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES")).thenReturn(dbResultSet2);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%'")).thenReturn(dbResultSet2);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenReturn(dbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenReturn(dbResultSet);
+  }
+
+  /**
+   * Initialize the catalog metadata results.
+   *
+   * @throws SQLException If an error occurs while retrieving the value.
+   */
   private void initializeWithResult() throws SQLException {
     final ResultSet emptyResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(emptyResultSet.next()).thenReturn(false);
@@ -326,6 +385,7 @@ class TimestreamDatabaseMetaDataTest {
     final ResultSet dbResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(dbResultSet.next()).thenReturn(true).thenReturn(false);
     Mockito.when(dbResultSet.getString(1)).thenReturn("testDB");
+
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenReturn(dbResultSet);
@@ -342,7 +402,7 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(tableResultSet.getString(1)).thenReturn("testTable").thenReturn("secondTable");
 
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\""))
-      .thenReturn(tableResultSet);
+            .thenReturn(tableResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '%test%'"))
       .thenReturn(singleTableResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '_estTabl_'"))
@@ -359,6 +419,16 @@ class TimestreamDatabaseMetaDataTest {
       .thenReturn(columnsResultSet);
     Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"secondTable\""))
             .thenReturn(columnsResultSet);
+  }
+
+  /**
+   * Initialize the catalog metadata results with an exception.
+   *
+   * @throws SQLException If an error occurs while retrieving the value.
+   */
+  private void initializeWithResultException() throws SQLException {
+    final AmazonTimestreamQueryException exception = new AmazonTimestreamQueryException("access denied");
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES")).thenThrow(exception);
   }
 
   /**
@@ -382,21 +452,32 @@ class TimestreamDatabaseMetaDataTest {
    * Validate resultSet MetaData returned from getSchemas.
    *
    * @param resultSet ResultSet need to be validated.
+   * @param expectedNumRows Expected number of rows.
    * @throws SQLException If an error occurs while retrieving the value.
    */
-  private void testGetSchemasResult(ResultSet resultSet) throws SQLException {
-    final String[] string1 = {"", "testDB", null};
+  private void testGetSchemasResult(ResultSet resultSet, int expectedNumRows) throws SQLException {
+    final String[] string1 = {"testDB", null};
+    final String[] string2 = {"exampleDB", null};
     final List<String[]> strings = new ArrayList<>();
     strings.add(string1);
+    strings.add(string2);
 
     int numRows = 0;
+    int matchedRows = 0;
     while (resultSet.next()) {
+      int match = 0;
       for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); ++i) {
-        Assertions.assertEquals(strings.get(numRows)[i], resultSet.getString(i));
+        if (strings.get(numRows)[i-1] == resultSet.getString(i)) {
+          match++;
+        }
+      }
+      // current strings.get(numRows) could match all resultSet data
+      if (match == resultSet.getMetaData().getColumnCount()) {
+        matchedRows++;
       }
       numRows++;
     }
-    Assertions.assertEquals(1, numRows);
+    Assertions.assertEquals(expectedNumRows, matchedRows);
   }
 
   /**
