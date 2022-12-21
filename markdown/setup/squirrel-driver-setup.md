@@ -38,7 +38,7 @@
     
     b. For the **Driver:** field, ensure **Timestream** is selected.
 
-    c. For the **URL:** field, enter your JDBC connection string. For example, `jdbc:timestream://AccessKeyId=myAccessKeyId;SecretAccessKey=mySecretAccessKey;Region=us-east-1;`. For a list of connection properties (e.g., Access Key, Secret Key, etc.), see [README](../../README.md#optional-connection-properties)
+    c. For the **URL:** field, enter your JDBC connection string. For example, `jdbc:timestream://AccessKeyId=myAccessKeyId;SecretAccessKey=mySecretAccessKey;SessionToken=oxcdsfsnu;Region=us-east-1;`. For a list of connection properties (e.g., Access Key, Secret Key, etc.), see [README](../../README.md#optional-connection-properties)
 
     d. Do **NOT** use the **"User Name:"** and **"Password:"** fields to fill credentials, they could not work.
 

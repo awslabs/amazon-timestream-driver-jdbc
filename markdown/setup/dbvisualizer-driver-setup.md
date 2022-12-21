@@ -31,7 +31,7 @@
 
     c. For the **Driver Type** field, ensure the **Timesteam** is selected.
 
-    d. For the **Database URL** field, enter your [JDBC connection string](../../README.md#optional-connection-properties). For example, ```jdbc:timestream://AccessKeyId=abcdef;SecretAccessKey=123456;Region=us-east-1;```
+    d. For the **Database URL** field, enter your [JDBC connection string](../../README.md#optional-connection-properties). For example, ```jdbc:timestream://AccessKeyId=abcdef;SecretAccessKey=123456;SessionToken=xofdgdmlwj;Region=us-east-1;```
 
     e. Your **Database Connection** dialog should look like the following.
 
