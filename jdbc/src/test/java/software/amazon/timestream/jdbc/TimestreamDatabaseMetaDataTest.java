@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -354,24 +355,6 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%test%'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenReturn(dbResultSet);
-
-    final ResultSet tableResultSet = Mockito.mock(ResultSet.class);
-    Mockito.when(tableResultSet.next()).thenReturn(true).thenReturn(false);
-    Mockito.when(tableResultSet.getString(1)).thenReturn("testTable");
-    Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\""))
-      .thenReturn(tableResultSet);
-    Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '%test%'"))
-      .thenReturn(tableResultSet);
-    Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '_estTabl_'"))
-      .thenReturn(tableResultSet);
-    Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '%Ta_le'"))
-      .thenReturn(tableResultSet);
-
-    final ResultSet columnsResultSet = Mockito.mock(ResultSet.class);
-    Mockito.when(columnsResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
-    Mockito.when(columnsResultSet.getString(Mockito.anyInt())).thenReturn("ColName");
-    Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"testTable\""))
-      .thenReturn(columnsResultSet);
   }
 
   /**
@@ -450,6 +433,7 @@ class TimestreamDatabaseMetaDataTest {
     strings.add(string2);
 
     int numRows = 0;
+    int matchedRows = 0;
     while (resultSet.next()) {
       int match = 0;
       for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); ++i) {
@@ -457,11 +441,13 @@ class TimestreamDatabaseMetaDataTest {
           match++;
         }
       }
+      // current strings.get(numRows) could match all resultSet data
       if (match == resultSet.getMetaData().getColumnCount()) {
-        numRows++;
+        matchedRows++;
       }
+      numRows++;
     }
-    Assertions.assertEquals(expectedNumRows, numRows);
+    Assertions.assertEquals(expectedNumRows, matchedRows);
   }
 
   /**
