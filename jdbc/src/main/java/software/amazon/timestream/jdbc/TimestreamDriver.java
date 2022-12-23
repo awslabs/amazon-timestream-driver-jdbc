@@ -175,43 +175,9 @@ public class TimestreamDriver implements java.sql.Driver {
      * @return the name of the currently running application.
      */
     private static String getApplicationName() {
-        // What we do is get the process ID of the current process, then check the set of running processes and pick out
+        // Currently not supported.
+        // Need to implement logic to get the process ID of the current process, then check the set of running processes and pick out
         // the one that matches the current process. From there we can grab the name of what is running the process.
-        try {
-            final String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
-            final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-
-            if (isWindows) {
-                final Process process = Runtime.getRuntime()
-                    .exec("tasklist /fi \"PID eq " + pid + "\" /fo csv /nh");
-                try (BufferedReader input = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                    final String line = input.readLine();
-                    if (line != null) {
-                        // Omit the surrounding quotes.
-                        return line.substring(1, line.indexOf(",") - 1);
-                    }
-                }
-            } else {
-                final Process process = Runtime.getRuntime().exec("ps -eo pid,comm");
-                try (BufferedReader input = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                    String line;
-                    while ((line = input.readLine()) != null) {
-                        line = line.trim();
-                        if (line.startsWith(pid)) {
-                            return line.substring(line.indexOf(" ") + 1);
-                        }
-                    }
-                }
-            }
-        } catch (Exception err) {
-            // Eat the exception and fall through.
-            LOGGER.warning(
-                "An exception has occurred and ignored while retrieving the caller application name: "
-                    + err.getLocalizedMessage());
-        }
-
         return "Unknown";
     }
 
