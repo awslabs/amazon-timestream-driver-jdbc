@@ -176,7 +176,7 @@ public class TimestreamDriver implements java.sql.Driver {
      */
     private static String getApplicationName() {
         // Currently not supported.
-        // Need to implement to get the process ID of the current process, then check the set of running processes and pick out
+        // Need to implement logic to get the process ID of the current process, then check the set of running processes and pick out
         // the one that matches the current process. From there we can grab the name of what is running the process.
         return "Unknown";
     }
