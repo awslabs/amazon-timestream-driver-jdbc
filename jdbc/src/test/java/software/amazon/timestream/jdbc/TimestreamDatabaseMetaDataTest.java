@@ -31,8 +31,8 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -121,7 +121,7 @@ class TimestreamDatabaseMetaDataTest {
   @ParameterizedTest
   @ValueSource(strings = {"invalidDB"})
   void testGetSchemasWithInvalidSchemaPattern(String schemaPattern) throws SQLException {
-    initializeWithTwoResults();
+    initializeWithResult();
     try (ResultSet resultSet = dbMetaData
             .getSchemas(null, schemaPattern)) {
       testGetSchemasResult(resultSet, 0);
@@ -394,6 +394,7 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'testDB'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE '%testDB%'")).thenReturn(dbResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'emptyDB'")).thenReturn(emptydbResultSet);
+    Mockito.when(mockStatement.executeQuery("SHOW DATABASES LIKE 'invalidDB'")).thenReturn(emptyResultSet);
 
     final ResultSet singleTableResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(singleTableResultSet.next()).thenReturn(true).thenReturn(false);
@@ -412,7 +413,7 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"testDB\" LIKE '%Ta_le'"))
       .thenReturn(singleTableResultSet);
     Mockito.when(mockStatement.executeQuery("SHOW TABLES FROM \"emptyDB\""))
-            .thenReturn(emptyResultSet);
+      .thenReturn(emptyResultSet);
 
     final ResultSet columnsResultSet = Mockito.mock(ResultSet.class);
     Mockito.when(columnsResultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
@@ -420,7 +421,7 @@ class TimestreamDatabaseMetaDataTest {
     Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"testTable\""))
       .thenReturn(columnsResultSet);
     Mockito.when(mockStatement.executeQuery("DESCRIBE \"testDB\".\"secondTable\""))
-            .thenReturn(columnsResultSet);
+      .thenReturn(columnsResultSet);
   }
 
   /**
@@ -469,7 +470,7 @@ class TimestreamDatabaseMetaDataTest {
     while (resultSet.next()) {
       int match = 0;
       for (int i = 1; i <= resultSet.getMetaData().getColumnCount(); ++i) {
-        if (strings.get(numRows)[i-1] == resultSet.getString(i)) {
+        if (Objects.equals(strings.get(numRows)[i - 1], resultSet.getString(i))) {
           match++;
         }
       }
