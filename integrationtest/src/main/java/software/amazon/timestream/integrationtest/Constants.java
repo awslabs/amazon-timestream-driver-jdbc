@@ -17,6 +17,7 @@ package software.amazon.timestream.integrationtest;
 
 import com.amazonaws.services.timestreamwrite.model.MeasureValueType;
 import com.google.common.collect.ImmutableMap;
+
 import java.util.Map;
 
 /**
@@ -28,16 +29,9 @@ final class Constants {
   static final String TABLE_NAME = "Integration_Test_Table_07";
   static final String NON_EXISTENT_TABLE_NAME = "NotExistTableName";
   static final String[] DATABASES_NAMES = new String[]{
-      "FAST_PATH_TEST_DB",
       "JDBC_Integration07_Test_DB",
-      "TestV1",
-      "devops",
-      "grafanaPerfDB",
-      "grafana_db",
-      "perf07",
-      "performance07",
-      "sampleDB",
-      "testDB"
+      "Integration_Test_DB01",
+      "Integration_Test_DB02"
   };
   static final String[] COLUMN_NAMES = new String[]{
       "hostname",
@@ -56,6 +50,55 @@ final class Constants {
       "measure_value::varchar",
   };
 
+  static final String NO_DB_NO_TB_REGION = "ap-southeast-2";
+  static final String[] NO_DB_DATABASE_NAMES = new String[]{};
+  static final String[] NO_TB_TABLE_NAMES = new String[]{};
+
+  static final String ONE_DB_NO_TB_REGION = "ap-northeast-1";
+  static final String[] ONE_DB_NO_TB_DATABASE_NAME = new String[]{
+      "EmptyDb_1_2.34"
+  };
+  static final String[] ONE_DB_NO_TB_TABLE_NAMES = new String[]{};
+
+  static final String ONE_DB_ONE_TB_REGION = "eu-central-1";
+  static final String[] ONE_DB_ONE_TB_DATABASE_NAME = new String[]{
+      "JDBC_.IntegrationTestDB0088"
+  };
+  static final String[] ONE_DB_ONE_TB_TABLE_NAME = new String[]{
+      "IntegrationTestTable0888",
+  };
+
+  static final String ONE_DB_MUTLI_TB_REGION = "eu-west-1";
+  static final String[] ONE_DB_MUTLI_TB_DATABASES_NAME = new String[]{
+      "JDBC_Inte.gration_Te.st_DB_01"
+  };
+  static final String[] ONE_DB_MUTLI_TB_TABLE_NAMES = new String[]{
+      "Inte.gration_Tes_t_Tab_le_03",
+      "Integ.ration_Te_st_T_able_01",
+      "Integr.ation_Test_Ta_ble_02"
+  };
+
+  static final String[] MULTI_DB_MUTLI_TB_DATABASES_NAMES = new String[]{
+      "JD_BC_Int.egration_Test_DB_001",
+      "JDB.C_Integration-Test_DB_002",
+      "JD-BC_Integration.Test_DB_003"
+  };
+  static final String[] MULTI_DB_MUTLI_TB_TABLE_NAMES1 = new String[]{
+      "Inte-gration_Tes1t_Table_01_01",
+      "Inte-gration2_Te-st_Table_01_02",
+      "Inte-gration_Test_3Ta-ble_01_03"
+  };
+  static final String[] MULTI_DB_MUTLI_TB_TABLE_NAMES2 = new String[]{
+      "Integration-Test_Ta1ble_02_01",
+      "Integration.-Te-st_Table_02_02"
+  };
+  static final String[] MULTI_DB_MUTLI_TB_TABLE_NAMES3 = new String[]{
+      "JD-BC_Integration-Test_Ta1ble_03_01",
+      "JD-BC_Integration.-Te-st_Table_03_02",
+      "JD-BC_Integration--Test2_Table_03_03",
+      "JD-BC_Integration0-Te-st_Ta.ble_03_04"
+  };
+
   static final int TABLE_COLUMN_NUM = 9;
   static final int TABLE_ROW_SIZE = 4;
   static final long HT_TTL_HOURS = 24L;
@@ -72,5 +115,6 @@ final class Constants {
       .put(MeasureValueType.BOOLEAN, BOOLEAN_VALUE)
       .build();
 
-  private Constants() { }
+  private Constants() {
+  }
 }

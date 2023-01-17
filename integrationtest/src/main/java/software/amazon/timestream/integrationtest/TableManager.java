@@ -18,7 +18,9 @@ package software.amazon.timestream.integrationtest;
 import com.amazonaws.services.timestreamwrite.AmazonTimestreamWrite;
 import com.amazonaws.services.timestreamwrite.AmazonTimestreamWriteClientBuilder;
 import com.amazonaws.services.timestreamwrite.model.ConflictException;
+import com.amazonaws.services.timestreamwrite.model.CreateDatabaseRequest;
 import com.amazonaws.services.timestreamwrite.model.CreateTableRequest;
+import com.amazonaws.services.timestreamwrite.model.DeleteDatabaseRequest;
 import com.amazonaws.services.timestreamwrite.model.DeleteTableRequest;
 import com.amazonaws.services.timestreamwrite.model.Dimension;
 import com.amazonaws.services.timestreamwrite.model.MeasureValueType;
@@ -35,15 +37,91 @@ import java.util.stream.Collectors;
  * Handles table creation and clean up for the integration tests.
  */
 class TableManager {
+  static String region = "us-east-1";
+
+  static void setRegion(String regionVal) {
+    region = regionVal;
+  }
+
+  static String getRegion() {
+    return region;
+  }
 
   /**
-   * Creates a new table {@link Constants#TABLE_NAME} in the {@link Constants#DATABASE_NAME} if not
-   * already existed. Deletes the table if already existed and then creates a new one.
+   * Creates a new database if not already existed.
+   * Deletes the database if already existed and then creates a new one.
+   *
+   * @param database Database to be created
    */
-  static void createTable() {
+  static void createDatabase(String database) {
+    final CreateDatabaseRequest createDatabaseRequest = new CreateDatabaseRequest();
+    createDatabaseRequest.setDatabaseName(database);
+    try {
+      buildWriteClient().createDatabase(createDatabaseRequest);
+    } catch (ConflictException e) {
+      final DeleteDatabaseRequest deleteDatabaseRequest = new DeleteDatabaseRequest();
+      deleteDatabaseRequest.setDatabaseName(database);
+      try {
+        buildWriteClient().deleteDatabase(deleteDatabaseRequest);
+      } catch (Exception exception) {
+        System.out.println(exception.getMessage());
+      }
+      buildWriteClient().createDatabase(createDatabaseRequest);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+
+  }
+
+  /**
+   * Creates databases if not already existed.
+   * For each database, deletes the database if already existed and then creates a new one.
+   *
+   * @param databases Databases to be created
+   */
+  static void createDatabases(String[] databases) {
+    for (String database : databases) {
+      createDatabase(database);
+    }
+  }
+
+  /**
+   * Creates new tables in the database if not already existed.
+   * Deletes the table if already existed and then creates a new one.
+   *
+   * @param tables   Tables to be created
+   * @param database Database to contain the tables
+   */
+  static void createTables(String[] tables, String database) {
+    for (String table : tables) {
+      createTable(table, database);
+    }
+  }
+
+  /**
+   * Creates new tables in the databases if not already existed.
+   * Deletes the table if already existed and then creates a new one.
+   *
+   * @param tables   Tables to be created
+   * @param databases List of databases to contain the tables
+   */
+  static void createTables(String[] tables, String[] databases) {
+    for (String database : databases) {
+      createTables(tables, database);
+    }
+  }
+
+  /**
+   * Creates new tables in the database if not already existed.
+   * Deletes the table if already existed and then creates a new one.
+   *
+   * @param table    Table to be created
+   * @param database Database to contain the table
+   */
+  static void createTable(String table, String database) {
     final CreateTableRequest createTableRequest = new CreateTableRequest();
-    createTableRequest.setDatabaseName(Constants.DATABASE_NAME);
-    createTableRequest.setTableName(Constants.TABLE_NAME);
+    createTableRequest.setDatabaseName(database);
+    createTableRequest.setTableName(table);
     final RetentionProperties retentionProperties = new RetentionProperties()
         .withMemoryStoreRetentionPeriodInHours(Constants.HT_TTL_HOURS)
         .withMagneticStoreRetentionPeriodInDays(Constants.CT_TTL_DAYS);
@@ -51,7 +129,7 @@ class TableManager {
     try {
       buildWriteClient().createTable(createTableRequest);
     } catch (ConflictException e) {
-      deleteTable();
+      deleteTable(table, database);
       buildWriteClient().createTable(createTableRequest);
     }
   }
@@ -86,13 +164,71 @@ class TableManager {
   }
 
   /**
-   * Deletes the table {@link Constants#TABLE_NAME} from {@link Constants#DATABASE_NAME}.
+   * Deletes the database. Precondition: database is empty
+   *
+   * @param database Database to be deleted
    */
-  static void deleteTable() {
+  static void deleteDatabase(String database) {
+    final DeleteDatabaseRequest deleteDatabaseRequest = new DeleteDatabaseRequest();
+    deleteDatabaseRequest.setDatabaseName(database);
+    try {
+      buildWriteClient().deleteDatabase(deleteDatabaseRequest);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  /**
+   * Deletes the databases in provided array.
+   * Precondition: databases are empty
+   *
+   * @param databases Databases to be deleted
+   */
+  static void deleteDatabases(String[] databases) {
+    for (String database : databases) {
+      deleteDatabase(database);
+    }
+  }
+
+  /**
+   * Deletes the table from database
+   *
+   * @param table    Table to be deleted
+   * @param database Database to delete the table from
+   */
+  static void deleteTable(String table, String database) {
     final DeleteTableRequest deleteTableRequest = new DeleteTableRequest();
-    deleteTableRequest.setDatabaseName(Constants.DATABASE_NAME);
-    deleteTableRequest.setTableName(Constants.TABLE_NAME);
-    buildWriteClient().deleteTable(deleteTableRequest);
+    deleteTableRequest.setDatabaseName(database);
+    deleteTableRequest.setTableName(table);
+    try {
+      buildWriteClient().deleteTable(deleteTableRequest);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  /**
+   * Deletes the tables from database
+   *
+   * @param tables   Tables to be deleted
+   * @param database Database to delete the tables from
+   */
+  static void deleteTables(String[] tables, String database) {
+    for (String table : tables) {
+      deleteTable(table, database);
+    }
+  }
+
+  /**
+   * Deletes new tables in the databases
+   *
+   * @param tables   Tables to be created
+   * @param databases List of databases that contain the tables
+   */
+  static void deleteTables(String[] tables, String[] databases) {
+    for (String database : databases) {
+      deleteTables(tables, database);
+    }
   }
 
   /**
@@ -101,6 +237,6 @@ class TableManager {
    * @return the {@link AmazonTimestreamWrite}.
    */
   private static AmazonTimestreamWrite buildWriteClient() {
-    return AmazonTimestreamWriteClientBuilder.standard().withRegion("us-east-1").build();
+    return AmazonTimestreamWriteClientBuilder.standard().withRegion(getRegion()).build();
   }
 }
