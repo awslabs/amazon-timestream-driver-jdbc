@@ -33,7 +33,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <awssdk.version>1.11.870</awssdk.version>
-    <guava.version>29.0-jre</guava.version>
+    <guava.version>32.0.0-jre</guava.version>
     <junit.jupiter.version>5.6.2</junit.jupiter.version>
     <jsoup.version>1.15.3</jsoup.version>
     <maven.install.version>3.0.0-M1</maven.install.version>
