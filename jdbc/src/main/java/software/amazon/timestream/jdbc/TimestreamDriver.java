@@ -32,6 +32,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import com.sun.jna.Native;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.Psapi;
+import com.sun.jna.platform.win32.WinNT;
 /**
  * Timestream JDBC Driver class.
  */
@@ -175,9 +179,48 @@ public class TimestreamDriver implements java.sql.Driver {
      * @return the name of the currently running application.
      */
     private static String getApplicationName() {
-        // Currently not supported.
-        // Need to implement logic to get the process ID of the current process, then check the set of running processes and pick out
+        // What we do is get the process ID of the current process, then check the set of running processes and pick out
         // the one that matches the current process. From there we can grab the name of what is running the process.
+        try {
+            final String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+            final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+
+            if (isWindows) {
+                // Get the process ID of the current Java process
+                int processId = Kernel32.INSTANCE.GetCurrentProcessId();
+
+                // Get the handle of the current Java process
+                WinNT.HANDLE processHandle = Kernel32.INSTANCE.OpenProcess(
+                Kernel32.PROCESS_QUERY_INFORMATION | Kernel32.PROCESS_VM_READ,
+                        false,
+                        processId);
+
+                Psapi psapi = Psapi.INSTANCE;
+                char[] buffer = new char[1000];
+                psapi.GetModuleFileNameExW(processHandle, null, buffer, 1000);
+                String processName = Native.toString(buffer);
+                //System.out.println("Application Name: " + processName);
+                return processName;
+            } else {
+                final Process process = Runtime.getRuntime().exec("ps -eo pid,comm");
+                try (BufferedReader input = new BufferedReader(
+                        new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = input.readLine()) != null) {
+                        line = line.trim();
+                        if (line.startsWith(pid)) {
+                            return line.substring(line.indexOf(" ") + 1);
+                        }
+                    }
+                }
+            }
+        } catch (Exception err) {
+            // Eat the exception and fall through.
+            LOGGER.warning(
+                    "An exception has occurred and ignored while retrieving the caller application name: "
+                            + err.getLocalizedMessage());
+        }
+
         return "Unknown";
     }
 
