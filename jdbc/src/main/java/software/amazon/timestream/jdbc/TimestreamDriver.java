@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
@@ -32,10 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import com.sun.jna.Native;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.Psapi;
-import com.sun.jna.platform.win32.WinNT;
 /**
  * Timestream JDBC Driver class.
  */
@@ -185,27 +182,26 @@ public class TimestreamDriver implements java.sql.Driver {
             final String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
             final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 
+            String command;
             if (isWindows) {
-                // Get the process ID of the current Java process
-                int processId = Kernel32.INSTANCE.GetCurrentProcessId();
-
-                // Get the handle of the current Java process
-                WinNT.HANDLE processHandle = Kernel32.INSTANCE.OpenProcess(
-                Kernel32.PROCESS_QUERY_INFORMATION | Kernel32.PROCESS_VM_READ,
-                        false,
-                        processId);
-
-                Psapi psapi = Psapi.INSTANCE;
-                char[] buffer = new char[1000];
-                psapi.GetModuleFileNameExW(processHandle, null, buffer, 1000);
-                String processName = Native.toString(buffer);
-                //System.out.println("Application Name: " + processName);
-                return processName;
+                command = "tasklist /fo csv /nh";
             } else {
-                final Process process = Runtime.getRuntime().exec("ps -eo pid,comm");
-                try (BufferedReader input = new BufferedReader(
-                        new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                    String line;
+                command = "ps -eo pid,comm";
+            }
+
+            final Process process = Runtime.getRuntime().exec(command);
+            try (BufferedReader input = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                if (isWindows) {
+                    while ((line = input.readLine()) != null) {
+                        int start = line.indexOf(",");
+                        int end = line.indexOf(",", start+1);
+                        if (line.substring(start+1, end).contains(pid)){
+                            return line.substring(0, line.indexOf(","));
+                        }
+                    }
+                } else {
                     while ((line = input.readLine()) != null) {
                         line = line.trim();
                         if (line.startsWith(pid)) {
