@@ -68,8 +68,7 @@ class TimestreamDriverTest {
 
   @Test
   void testDriverApplicationName() throws SQLException {
-    String expectedResult = "java.exe";
-    Assertions.assertEquals(expectedResult, TimestreamDriver.APPLICATION_NAME);
+    Assertions.assertEquals("java.exe", TimestreamDriver.APPLICATION_NAME);
   }
 
   @ParameterizedTest
