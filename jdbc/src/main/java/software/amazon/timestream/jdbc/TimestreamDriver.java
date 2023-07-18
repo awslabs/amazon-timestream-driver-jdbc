@@ -198,7 +198,7 @@ public class TimestreamDriver implements java.sql.Driver {
                         int start = line.indexOf(",");
                         int end = line.indexOf(",", start+1);
                         if (line.substring(start+1, end).contains(pid)){
-                            return line.substring(0, line.indexOf(","));
+                            return line.substring(1, line.indexOf(",") - 1);
                         }
                     }
                 } else {
