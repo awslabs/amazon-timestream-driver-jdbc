@@ -66,6 +66,16 @@ class TimestreamDriverTest {
     Assertions.assertNull(driver.connect(null, null));
   }
 
+  @Test
+  void testDriverApplicationName() throws SQLException {
+    final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+    if (isWindows) {
+        Assertions.assertEquals("java.exe", TimestreamDriver.APPLICATION_NAME);
+    } else {
+        Assertions.assertEquals("java", TimestreamDriver.APPLICATION_NAME);
+    }
+  }
+
   @ParameterizedTest
   @ValueSource(strings = {
       Constants.URL_PREFIX,
