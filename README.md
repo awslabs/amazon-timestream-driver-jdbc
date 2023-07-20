@@ -397,7 +397,8 @@ Upon completion, the page will be redirected back to the `Identity providers` pa
 Timestream JDBC driver could get the upper application name, which is collected by Timesteam. The application name is retrieved almost same for all platforms. The idea is to get all running process info by executing an OS specific command first, then do the match in the result set using the current process ID. The command for Windows is `tasklist`, it is `ps` for Linux and macOS. The application name that is retrieved does not contain any path or credential info. The examples could be referred below.
 
 For Windows if you are using a BI tool like DbVisualizer, the application name is `dbvis.exe`.
-For Linux and macOS if you are using a BI tool like DbVisualizer, the application name is `dbviscmd.sh` or `dbvisgui.sh` depending how it is started.
+For Linux if you are using a BI tool like DbVisualizer, the application name is `dbviscmd.sh` or `dbvisgui.sh` if it is started from command line.
+For macOS if you are using a BI tool like DBeaver, the application name is `dbeaver`.
 
 # Developer Documentation
 
