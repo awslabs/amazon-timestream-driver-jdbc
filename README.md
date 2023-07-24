@@ -399,6 +399,7 @@ Upon completion, the page will be redirected back to the `Identity providers` pa
 
 ### Building the fully shaded JAR With All Dependencies Shaded Except SLF4J (amazon-timestream-jdbc-\<version\>-jar-with-all-dependencies.jar)
 To build a fully shaded JAR, comment out the following two lines in the pom file in the [/jdbc/pom.xml](/jdbc/pom.xml) then run `mvn install`.
+#### To build the signed jar the following maven profile should be used: `mvn clean install -Ddeploy`.
 
 ```xml
 <scope>system</scope>
@@ -453,6 +454,14 @@ To use the JAR with no dependencies in a Java application, the following require
 
 ### Building and using the Javadoc JAR to extract the Javadoc HTML files (amazon-timestream-jdbc-\<version\>-javadoc.jar)
 Javadoc JAR builds with `mvn install` alongside the other JAR files. To extract the Javadoc HTML files, use the following command: `jar -xvf amazon-timestream-jdbc-1.0.0-javadoc.jar`
+
+### GPG Installation
+For building signed jar before executing: `mvn clean install -Pdeploy` the following setup should be done
+1. Download and install GPG https://gnupg.org/download/
+2. Generate new key:
+   For GPG version 2.1.17 or greater: `gpg --full-generate-key`
+   For GPG version lower than 2.1.17: `gpg --default-new-key-algo rsa4096 --gen-key`
+3. Export GPG TTY: `export GPG_TTY=$(tty)`
 
 ### Known Issues
 1. Timestream does not support fully qualified table names.
