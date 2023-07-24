@@ -17,7 +17,6 @@ package software.amazon.timestream.jdbc;
 
 import com.amazonaws.ClientConfiguration;
 import com.google.common.annotations.VisibleForTesting;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
@@ -25,12 +24,7 @@ import javax.sql.PooledConnection;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -41,12 +35,6 @@ public class TimestreamDataSource implements javax.sql.DataSource,
 
   private static final Logger LOGGER = Logger
     .getLogger("TimestreamDataSource");
-
-  static {
-    SLF4JBridgeHandler.removeHandlersForRootLogger();
-    SLF4JBridgeHandler.install();
-    LOGGER.setLevel(Level.FINE);
-  }
 
   @VisibleForTesting
   final ClientConfiguration clientConfiguration = new ClientConfiguration()

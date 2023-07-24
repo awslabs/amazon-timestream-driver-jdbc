@@ -454,6 +454,23 @@ To use the JAR with no dependencies in a Java application, the following require
 ### Building and using the Javadoc JAR to extract the Javadoc HTML files (amazon-timestream-jdbc-\<version\>-javadoc.jar)
 Javadoc JAR builds with `mvn install` alongside the other JAR files. To extract the Javadoc HTML files, use the following command: `jar -xvf amazon-timestream-jdbc-1.0.0-javadoc.jar`
 
+### Debug with BI tools
+#### DBeaver
+To enable debug logs, the application should be run with `-Ddbeaver.trace.enabled=true` flag
+
+#### DbVisualizer
+To enable debug mode, the following steps should be done:
+1. Open `Tools -> Debug Window`
+2. Open the `Debug Log` tab
+3. Enable the `Debug DbVisualizer` checkbox
+
+#### Tableau Desktop
+To enable debug mode need to run Tableau Desktop with -DLogLevel=debug flag
+More details on the official [documentation](https://kb.tableau.com/articles/howto/how-to-create-tableau-desktop-debug-logs)
+
+#### Java Application
+Need to change log level to Debug/FINE. See official documentation how to change log level.
+
 ### Known Issues
 1. Timestream does not support fully qualified table names.
 2. Timestream does not support the queries that contain ":" in the column aliases. Tools like Tableau may not work as expected.
