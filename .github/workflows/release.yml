@@ -21,7 +21,7 @@ jobs:
       with:
         java-version: 1.8
     - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      run: mvn -B package --file pom.xml -Pdeploy
     - name: Upload JARs to release
       uses: AButler/upload-release-assets@v2.0
       with:
