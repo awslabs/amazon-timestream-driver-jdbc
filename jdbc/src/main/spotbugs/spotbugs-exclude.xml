@@ -18,14 +18,85 @@
     <Class name="software.amazon.timestream.jdbc.TimestreamTablesResultSet"/>
     <Method name="populateCurrentRows"/>
   </Match>
+
+  <!--
+    The errors:
+    Returning a reference to a mutable object value stored in one of the object's fields exposes the internal representation of the object.
+    If instances are accessed by untrusted code, and unchecked changes to the mutable object would compromise security or other important properties, you will need to do something different.
+    Returning a new copy of the object is better approach in many situations.
+
+    The code should allow users to be responsible for changing the state of the objects
+    -->
   <Match>
     <Bug pattern="EI_EXPOSE_REP"/>
-    <Package name="software.amazon.timestream.jdbc"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamStatement"/>
+    <Method name="getWarnings"/>
   </Match>
   <Match>
-    <Bug pattern="EI_EXPOSE_REP2"/>
-    <Package name="software.amazon.timestream.jdbc"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamStatement"/>
+    <Method name="getResultSet"/>
   </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamStatement"/>
+    <Method name="getConnection"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamStatement"/>
+    <Method name="executeQuery"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamPooledConnection"/>
+    <Method name="getConnection"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamDriver"/>
+    <Method name="getParentLogger"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamDatabaseMetaData"/>
+    <Method name="getConnection"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamDataSource"/>
+    <Method name="getParentLogger"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamConnection"/>
+    <Method name="getWarnings"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamConnection"/>
+    <Method name="getTypeMap"/>
+  </Match>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamConnection"/>
+    <Method name="getMetaData"/>
+  </Match>
+
+  <!--
+  The errors:
+  This code stores a reference to an externally mutable object into the internal representation of the object.
+  If instances are accessed by untrusted code, and unchecked changes to the mutable object would compromise security or other important properties,
+  you will need to do something different. Storing a copy of the object is better approach in many situations.
+
+  The code should allow to set external connection to the internal representation
+  -->
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+    <Class name="software.amazon.timestream.jdbc.TimestreamDatabaseMetaData"/>
+    <Method name="&lt;init&gt;"/>
+  </Match>
+
   <Match>
     <!--The proper solution to this issue would be using Prepared Statement to construct
     a pre-compiled SQL query, and currently the driver does not support Prepared Statement,
