@@ -46,13 +46,15 @@ class DatabaseMetaDataIntegrationTest {
 
   @BeforeAll
   private static void setUp() {
-    TableManager.createTable();
+    TableManager.createDatabases(Constants.DATABASES_NAMES);
+    TableManager.createTable(Constants.TABLE_NAME, Constants.DATABASE_NAME);
     TableManager.writeRecords();
   }
 
   @AfterAll
   private static void cleanUp() {
-    TableManager.deleteTable();
+    TableManager.deleteTable(Constants.TABLE_NAME, Constants.DATABASE_NAME);
+    TableManager.deleteDatabases(Constants.DATABASES_NAMES);
   }
 
   @BeforeEach
@@ -69,6 +71,7 @@ class DatabaseMetaDataIntegrationTest {
 
   /**
    * Test getCatalogs returns empty ResultSet.
+   *
    * @throws SQLException the exception thrown
    */
   @Test
@@ -85,6 +88,7 @@ class DatabaseMetaDataIntegrationTest {
 
   /**
    * Test getSchemas returns the list of all databases.
+   *
    * @throws SQLException the exception thrown
    */
   @Test
@@ -102,6 +106,7 @@ class DatabaseMetaDataIntegrationTest {
 
   /**
    * Test getSchemas returns database "JDBC_Integration07_Test_DB" when given matching patterns.
+   *
    * @param schemaPattern the schema pattern to be tested
    * @throws SQLException the exception thrown
    */
