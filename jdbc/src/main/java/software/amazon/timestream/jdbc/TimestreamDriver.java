@@ -17,18 +17,12 @@ package software.amazon.timestream.jdbc;
 
 import com.amazonaws.ClientConfiguration;
 import com.google.common.base.Strings;
-import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.management.ManagementFactory;
-import java.nio.charset.StandardCharsets;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -45,14 +39,6 @@ public class TimestreamDriver implements java.sql.Driver {
     static final String APPLICATION_NAME;
 
     static {
-        // We want to use SLF4J as the logging framework, so install the bridge for it.
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
-
-        // Enable only >= FINE logs in the JUL Logger since we want to control things via SLF4J. JUL Logger will filter out
-        // messages before it gets to SLF4J if it set to a restrictive level.
-        LOGGER.setLevel(Level.FINE);
-
         APPLICATION_NAME = getApplicationName();
         APP_NAME_SUFFIX = " [" + APPLICATION_NAME + "]";
         LOGGER.finer("Name of the application using the driver: " + APP_NAME_SUFFIX);

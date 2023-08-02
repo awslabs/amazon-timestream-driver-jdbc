@@ -399,6 +399,7 @@ Upon completion, the page will be redirected back to the `Identity providers` pa
 
 ### Building the fully shaded JAR With All Dependencies Shaded Except SLF4J (amazon-timestream-jdbc-\<version\>-jar-with-all-dependencies.jar)
 To build a fully shaded JAR, comment out the following two lines in the pom file in the [/jdbc/pom.xml](/jdbc/pom.xml) then run `mvn install`.
+#### To build the signed jar the following maven profile should be used: `mvn clean install -Ddeploy`.
 
 ```xml
 <scope>system</scope>
@@ -453,6 +454,80 @@ To use the JAR with no dependencies in a Java application, the following require
 
 ### Building and using the Javadoc JAR to extract the Javadoc HTML files (amazon-timestream-jdbc-\<version\>-javadoc.jar)
 Javadoc JAR builds with `mvn install` alongside the other JAR files. To extract the Javadoc HTML files, use the following command: `jar -xvf amazon-timestream-jdbc-1.0.0-javadoc.jar`
+
+### GPG Installation
+For building signed jar before executing: `mvn clean install -Pdeploy` the following setup should be done
+1. Download and install GPG https://gnupg.org/download/
+2. Generate new key:
+   For GPG version 2.1.17 or greater: `gpg --full-generate-key`
+   For GPG version lower than 2.1.17: `gpg --default-new-key-algo rsa4096 --gen-key`
+3. Export GPG TTY: `export GPG_TTY=$(tty)`
+
+### Debug with BI tools
+#### DBeaver
+1. Search `dbeaver.ini` file - It should be in the home DBeaver directory
+2. Open `dbeaver.ini` file and add line `-Ddbeaver.jdbc.trace=true` to the end of the file 
+3. Restart DBeaver Application
+4. Add driver and Connect to your timestream database.
+5. In DBeaver `Workspace` go to `.metadata` folder
+6. File `jdbc-api-trace.log` contains all JDBC API invocations and all queries with results.
+
+##### The log location Mac example
+/Library/DBeaverData/workspace6/.metadata/dbeaver-debug.log
+
+#### Log example
+2023-07-24 14:53:57.819 - Initializing the client.
+2023-07-24 14:53:57.819 - Creating an AWSStaticCredentialsProvider.
+2023-07-24 14:53:58.375 - Execution context opened (Timestream; Metadata; 1)
+2023-07-24 14:53:58.377 - Initializing the client.
+2023-07-24 14:53:58.377 - Creating an AWSStaticCredentialsProvider.
+
+#### DbVisualizer
+To enable debug mode, the following steps should be done:
+1. Open `Tools -> Debug Window`
+2. Open the `Debug Log` tab
+3. Enable the `Debug DbVisualizer` checkbox
+
+##### The log file location
+`$HOME/.dbvis/sqllogs folder with the .dson extension`
+
+#### Tableau Desktop
+To enable debug mode need to run Tableau Desktop with -DLogLevel=debug flag
+More details on the official [documentation](https://kb.tableau.com/articles/howto/how-to-create-tableau-desktop-debug-logs)
+
+#### Java Application
+Need to change the log level to `DEBUG` or `FINE`.
+
+#### For Spring based application 
+The log level can be modified by changing application.properties
+
+`logging.level.root=DEBUG`
+`logging.level.software.amazon.timestream.jdbc=FINE`
+
+#### By VM arguments
+1. Create file `logging.properties`
+2. Add line `software.amazon.timestream.jdbc=FINE` to the `logging.properties` file
+3. Run application with arguments `-Djava.util.logging.config.file="logging.properties"`
+
+#### Programmatically in the code
+`public static void setLogLevel(Level level) {
+Logger rootLogger = LogManager.getLogManager().getLogger("");
+   Handler[] handlers = rootLogger.getHandlers();
+   rootLogger.setLevel(level);
+   for (Handler handler : handlers) {
+      if(handler instanceof FileHandler) {
+         handler.setLevel(newLvl);
+      }
+   }`
+}`
+
+#### Logs example
+
+21:23:51.255 [main] INFO software.amazon.timestream.jdbc.TimestreamConnection - Initializing the client.
+21:23:51.256 [main] INFO software.amazon.timestream.jdbc.TimestreamConnection - Creating an AWSStaticCredentialsProvider.
+Jul. 25, 2023 9:23:51 P.M. com.amazonaws.internal.DefaultServiceEndpointBuilder getServiceEndpoint
+INFO: {query.timestream, us-west-2} was not found in region metadata, trying to construct an endpoint using the standard pattern for this region: region
+21:23:53.191 [main] INFO software.amazon.timestream.jdbc.TimestreamStatement - Query ID: SOME_ID
 
 ### Known Issues
 1. Timestream does not support fully qualified table names.
