@@ -20,6 +20,7 @@ import com.google.common.base.Strings;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
@@ -175,9 +176,48 @@ public class TimestreamDriver implements java.sql.Driver {
      * @return the name of the currently running application.
      */
     private static String getApplicationName() {
-        // Currently not supported.
-        // Need to implement logic to get the process ID of the current process, then check the set of running processes and pick out
+        // What we do is get the process ID of the current process, then check the set of running processes and pick out
         // the one that matches the current process. From there we can grab the name of what is running the process.
+        try {
+            final String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+            final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+
+            String command;
+            if (isWindows) {
+                command = "tasklist /fo csv /nh";
+            } else {
+                command = "ps -eo pid,comm";
+            }
+
+            final Process process = Runtime.getRuntime().exec(command);
+            try (BufferedReader input = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                if (isWindows) {
+                    while ((line = input.readLine()) != null) {
+                        int start = line.indexOf(",");
+                        int end = line.indexOf(",", start+1);
+                        if (line.substring(start+1, end).contains(pid)){
+                            return line.substring(1, line.indexOf(",") - 1);
+                        }
+                    }
+                } else {
+                    while ((line = input.readLine()) != null) {
+                        line = line.trim();
+                        if (line.startsWith(pid)) {
+                            String appPath = line.substring(line.indexOf(" ") + 1);
+                            return appPath.substring(appPath.lastIndexOf("/") + 1);
+                        }
+                    }
+                }
+            }
+        } catch (Exception err) {
+            // Eat the exception and fall through.
+            LOGGER.warning(
+                    "An exception has occurred and ignored while retrieving the caller application name: "
+                            + err.getLocalizedMessage());
+        }
+
         return "Unknown";
     }
 
