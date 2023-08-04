@@ -70,7 +70,7 @@
 
         <!-- Dependency versions -->
         <awssdk.version>1.12.512</awssdk.version>
-        <guava.version>29.0-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <junit.jupiter.version>5.6.2</junit.jupiter.version>
         <jsoup.version>1.16.1</jsoup.version>
         <mockito.version>2.28.2</mockito.version>
@@ -154,6 +154,33 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-file</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Source file to be copied -->
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/..</directory>
+                                    <includes>
+                                        <include>THIRD-PARTY-LICENSES.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <!-- Destination directory where the file will be copied -->
+                            <outputDirectory>${project.basedir}/src/main/resources/META-INF</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
