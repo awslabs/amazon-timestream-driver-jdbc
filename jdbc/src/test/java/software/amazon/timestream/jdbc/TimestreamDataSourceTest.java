@@ -105,6 +105,24 @@ class TimestreamDataSourceTest {
   }
 
   @Test
+  void testDataSourceWithEndpointDiscoveryAndRegion() throws SQLException {
+    final ArgumentCaptor<Properties> propertiesArgumentCaptor = ArgumentCaptor.forClass(Properties.class);
+    final MockTimestreamDataSource mockTimestreamDataSource = new MockTimestreamDataSource(
+        mockTimestreamConnection);
+
+    final Properties expected = new Properties();
+    expected.put(TimestreamConnectionProperty.REGION.getConnectionProperty(), "east");
+
+    mockTimestreamDataSource.setRegion("east");
+    mockTimestreamDataSource.getConnection();
+    Mockito.verify(mockTimestreamConnection).setClientInfo(propertiesArgumentCaptor.capture());
+
+    final Properties constructedConnectionProperties = propertiesArgumentCaptor.getValue();
+    Assertions.assertNotNull(constructedConnectionProperties);
+    Assertions.assertEquals(expected, constructedConnectionProperties);
+  }
+
+  @Test
   void testDataSourceWithEmptyEndpoint() {
     final MockTimestreamDataSource mockTimestreamDataSource = new MockTimestreamDataSource(
       mockTimestreamConnection);

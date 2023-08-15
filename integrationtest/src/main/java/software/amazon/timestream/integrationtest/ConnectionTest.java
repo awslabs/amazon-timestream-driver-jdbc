@@ -83,6 +83,46 @@ class ConnectionTest {
   }
 
   @Test
+  void testConnectionWithRegionOverride() throws SQLException {
+    final Properties properties = new Properties();
+    final String urlWithRegion = Constants.URL + "://Region=us-east-1";
+
+    // URL should override property value for region.
+    properties.put("region", "us-west-2");
+
+    try (Connection connection = DriverManager.getConnection(urlWithRegion, properties)) {
+      validateConnection(
+          connection,
+          EXPECTED_DEFAULT_CONNECTION_URL
+      );
+    }
+
+    final TimestreamDataSource dataSource = new TimestreamDataSource();
+    dataSource.setRegion("us-east-1");
+    try (Connection connection = dataSource.getConnection()) {
+      validateConnection(
+          connection,
+          EXPECTED_DEFAULT_CONNECTION_URL
+      );
+    }
+  }
+
+  @Test
+  void testConnectionWithEmptyRegion() {
+    final Properties properties = new Properties();
+    final String urlWithEmptyRegion = Constants.URL + "://Region=";
+
+    Assertions.assertThrows(
+        SQLException.class,
+        () -> DriverManager.getConnection(urlWithEmptyRegion, properties));
+
+    final TimestreamDataSource dataSource = new TimestreamDataSource();
+    dataSource.setEndpoint(urlWithEmptyRegion);
+    dataSource.setRegion("");
+    Assertions.assertThrows(SQLException.class, dataSource::getConnection);
+  }
+
+  @Test
   void testConnectionWithSDKOptions() throws SQLException {
     final Properties properties = new Properties();
     properties.setProperty("RequestTimeout", "1200");

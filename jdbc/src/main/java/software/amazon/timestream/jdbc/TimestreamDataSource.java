@@ -16,6 +16,7 @@
 package software.amazon.timestream.jdbc;
 
 import com.amazonaws.ClientConfiguration;
+import com.amazonaws.util.StringUtils;
 import com.google.common.annotations.VisibleForTesting;
 
 import javax.sql.ConnectionEvent;
@@ -712,13 +713,16 @@ public class TimestreamDataSource implements javax.sql.DataSource,
         throw new SQLException(error);
       }
 
-      if (this.region == null) {
+      if (StringUtils.isNullOrEmpty(this.region)) {
         final String error = Error.lookup(Error.MISSING_SERVICE_REGION);
         LOGGER.severe(error);
         throw new SQLException(error);
       }
 
       properties.put(TimestreamConnectionProperty.ENDPOINT.getConnectionProperty(), this.endpoint);
+    }
+
+    if (!StringUtils.isNullOrEmpty(this.region)) {
       properties.put(TimestreamConnectionProperty.REGION.getConnectionProperty(), this.region);
     }
 
