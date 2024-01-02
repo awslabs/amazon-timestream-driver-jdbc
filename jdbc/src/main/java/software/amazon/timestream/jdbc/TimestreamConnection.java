@@ -322,6 +322,8 @@ public class TimestreamConnection implements java.sql.Connection {
     } catch (Exception e) {
       LOGGER.error("Connection is no longer valid: {}", e.getMessage());
       return false;
+    } finally {
+      client.shutdown();
     }
   }
 
